@@ -64,7 +64,7 @@ def proxima_palabra(palabra):
         if opcion_min["bajada"] > opcion["bajada"]:
             opcion_min = opcion
     return opcion_min
-     
+
 def obtener_orden_de_remplazo(particiones):
     ordenes = []
     for elementos in particiones:    
@@ -129,7 +129,19 @@ def knapsack_p(capacidad, elementos):
 
     ordenes_de_remplazo = obtener_orden_de_remplazo(particiones)
     print("ordenes_de_remplazo: ", ordenes_de_remplazo)
+    
+    particiones_con_costo = []
 
+    for i in len(particiones):
+
+        particiones_con_costo.append({
+            "particion": particiones[i],
+            "costo_disminuido": proxima_palabra(opcion_min)["bajada"],
+            "proxima_particion": proxima_palabra(opcion_min)["proxima_particion"]
+        })
+    print(particiones_con_costo)        
+    # while capacidad > costo:
+        
     
 # esta funcion la hizo la ia 
 def knapsack_01(capacidad, objetos):
