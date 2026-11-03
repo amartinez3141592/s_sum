@@ -1,17 +1,18 @@
 import math
 from pyvis.network import Network
 
-def pertenece(nombre, palabras):
-    for l in palabras:
+# palabra es la lista de nombre, costo, valor,....
+def pertenece(nombre, palabra):
+    for l in palabra:
         if l == nombre:
             return True
     return False
 
-def anterior(nombre, net_orden, palabras):
+# palabra es la lista de nombre, costo, valor,....
+def anterior(nombre, net_orden, palabra):
     opciones = []
     for edge in network.edges:
-
-        if (edge['from'] == nombre) and (not pertenece(nombre, palabras)):
+        if (edge['from'] == nombre) and (not pertenece(nombre, palabra)):
             opciones.append({
                 "nombre": edge["to"],
                 "valor": edge["value"]
@@ -23,13 +24,47 @@ def anterior(nombre, net_orden, palabras):
         if minimo["valor"] > opcion["valor"]:
             minimo = opcion
     
-    return opcion
+    return minimo
 
+# palabra es la lista de nombre, costo, valor,....
 def costo(palabra):
     suma = 0
     for l in palabra:
         suma = suma + l["valor"]
-    return suma 
+    return suma
+
+# palabra es la lista de nombre, costo, valor,....
+def proxima_palabra(palabra):
+    opciones = []
+
+    # no es necesario, se hace en el siguiente while
+    # for letra_a_quitar in palabra:
+    #     palabra_mas_chica = []
+    #     for letra in palabra:
+    #         if (letra != letra_a_quitar):
+    #             palabra_mas_chica.append(letra)
+    #     opciones.append(palabra_mas_chica)
+    
+    for letra_a_remplazar in palabra:
+        palabra_mas_chica = []
+        bajada = 0
+        for letra in palabra:
+            if (letra != letra_a_remplazar):
+                palabra_mas_chica.append(anterior(letra))
+                bajada = anterior(letra)["valor"]
+            else:
+                palabra_mas_chica.append(letra)
+        opciones.append({
+            "palabra": palabra_mas_chica,
+            "bajada":  bajada
+        })
+    
+    opcion_min = opcion[0] 
+    for opcion in opciones:
+        if opcion_min["bajada"] > opcion["bajada"]:
+            opcion_min = opcion
+    return opcion_min
+     
 def obtener_orden_de_remplazo(particiones):
     ordenes = []
     for elementos in particiones:    
