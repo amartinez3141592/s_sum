@@ -1,16 +1,57 @@
 import math
 from pyvis.network import Network
 
+def pertenece(nombre, palabras):
+    for l in palabras:
+        if l == nombre:
+            return True
+    return False
 
-def obtener_orden_de_remplazo(elementos):
-    net = Network()
-    for e in elementos:
-        net.add_node(e[0])
+def anterior(nombre, net_orden, palabras):
+    opciones = []
+    for edge in network.edges:
 
-    i = 0
-    while i+1 < len(elementos):
-        net.add_edge(e)
+        if (edge['from'] == nombre) and (not pertenece(nombre, palabras)):
+            opciones.append({
+                "nombre": edge["to"],
+                "valor": edge["value"]
+            })
     
+    # busco el minimo
+    minimo = opciones[0]
+    for opcion in opciones:
+        if minimo["valor"] > opcion["valor"]:
+            minimo = opcion
+    
+    return opcion
+
+def costo(palabra):
+    suma = 0
+    for l in palabra:
+        suma = suma + l["valor"]
+    return suma 
+def obtener_orden_de_remplazo(particiones):
+    ordenes = []
+    for elementos in particiones:    
+        net = Network()
+        for e in elementos:
+            net.add_node(e["nombre"])
+            
+        net.add_node("null")
+
+        i = 0
+        while i+1 < len(elementos):
+            net.add_edge(elementos[i+1]["nombre"], elementos[i]["nombre"], value=elementos[i+1]["costo"]-elementos[i]["costo"])
+            i = i +1
+        i = 0
+        while i < len(elementos):
+            net.add_edge(elementos[i]["nombre"], "null", value=elementos[i]["costo"])
+            i = i +1
+        # net.show("grafo_nombres.html")
+        print(net)
+        ordenes.append(net)
+    return ordenes
+
 def particionado(elementos):
     L = []
     L.append([elementos[0]])
@@ -51,8 +92,8 @@ def knapsack_p(capacidad, elementos):
     particiones = particionado(elementos_ordenados_por_angulo_creciente)
     print("Particiones: ", particiones)
 
-    ordenes_de_remplazo =
-    print("Particiones: ", particiones)
+    ordenes_de_remplazo = obtener_orden_de_remplazo(particiones)
+    print("ordenes_de_remplazo: ", ordenes_de_remplazo)
 
     
 # esta funcion la hizo la ia 
