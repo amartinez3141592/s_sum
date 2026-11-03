@@ -1,6 +1,13 @@
 import math
 from pyvis.network import Network
 
+
+def obtener_palabra_de_particiones(particiones):
+    l = []
+    for pcc in particiones_con_costo:
+        for elemento in pcc["particion"]:
+            l.append(elemento["nombre"])
+    return l
 # palabra es la lista de nombre, costo, valor,....
 def pertenece(nombre, palabra):
     for l in palabra:
@@ -9,32 +16,32 @@ def pertenece(nombre, palabra):
     return False
 
 # palabra es la lista de nombre, costo, valor,....
-def anterior(nombre, net_orden, palabra):
-    opciones = []
-    for edge in network.edges:
-        if (edge['from'] == nombre) and (not pertenece(nombre, palabra)):
-            opciones.append({
+def anterior(letra, orden_c, palabra):
+    opciones_c = []
+    opciones_v = []
+    for edge in orden_c.edges:
+        if (edge['from'] == letra["nombre"]) and (not pertenece(edge["to"], palabra)):
+            opciones_c.append({
                 "nombre": edge["to"],
                 "valor": edge["value"]
             })
-    
-    # busco el minimo
-    minimo = opciones[0]
-    for opcion in opciones:
+    minimo = opciones_c[0]
+    for opcion in opciones_c:
         if minimo["valor"] > opcion["valor"]:
             minimo = opcion
-    
+
     return minimo
 
+
 # palabra es la lista de nombre, costo, valor,....
-def costo(palabra):
+def costo_de_palabra(palabra):
     suma = 0
     for l in palabra:
         suma = suma + l["valor"]
     return suma
 
 # palabra es la lista de nombre, costo, valor,....
-def proxima_palabra(palabra):
+def proxima_palabra(palabra, orden_c):
     opciones = []
 
     # no es necesario, se hace en el siguiente while
@@ -44,28 +51,29 @@ def proxima_palabra(palabra):
     #         if (letra != letra_a_quitar):
     #             palabra_mas_chica.append(letra)
     #     opciones.append(palabra_mas_chica)
-    
+    print(palabra)
     for letra_a_remplazar in palabra:
         palabra_mas_chica = []
         bajada = 0
         for letra in palabra:
-            if (letra != letra_a_remplazar):
-                palabra_mas_chica.append(anterior(letra))
-                bajada = anterior(letra)["valor"]
+            if (letra == letra_a_remplazar):
+                if anterior(letra, orden_c, palabra)["nombre"] != "null":
+                    palabra_mas_chica.append(anterior(letra, orden_c, palabra))
+                bajada = anterior(letra, orden_c, palabra)["valor"]
             else:
                 palabra_mas_chica.append(letra)
         opciones.append({
             "palabra": palabra_mas_chica,
             "bajada":  bajada
         })
-    
-    opcion_min = opcion[0] 
+        
+    opcion_min = opciones[0] 
     for opcion in opciones:
         if opcion_min["bajada"] > opcion["bajada"]:
             opcion_min = opcion
     return opcion_min
 
-def obtener_orden_de_remplazo(particiones):
+def obtener_orden_de_remplazo_en_costo(particiones):
     ordenes = []
     for elementos in particiones:    
         net = Network()
@@ -76,14 +84,15 @@ def obtener_orden_de_remplazo(particiones):
 
         i = 0
         while i+1 < len(elementos):
-            net.add_edge(elementos[i+1]["nombre"], elementos[i]["nombre"], value=elementos[i+1]["costo"]-elementos[i]["costo"])
+            net.add_edge(elementos[i+1]["nombre"], elementos[i]["nombre"],
+            value=((elementos[i+1]["costo"]-elementos[i]["costo"])**2)+ ((elementos[i+1]["valor"]-elementos[i]["valor"])**2))
             i = i +1
         i = 0
         while i < len(elementos):
             net.add_edge(elementos[i]["nombre"], "null", value=elementos[i]["costo"])
             i = i +1
         # net.show("grafo_nombres.html")
-        print(net)
+        # print(net)
         ordenes.append(net)
     return ordenes
 
@@ -112,37 +121,77 @@ def knapsack_p(capacidad, elementos):
             "angulo": math.atan(costo/valor),
             "ro": math.sqrt((costo*costo)+(valor*valor)),
         })
-    print("Elementos con angulo y ro: ", elementos_con_angulo)
+    # print("Elementos con angulo y ro: ", elementos_con_angulo)
     
-    print()
+    # print()
 
     elementos_ordenados_por_angulo_creciente = sorted(
         elementos_con_angulo,
         key=lambda x: x["angulo"],
         reverse=False
     )
-    print("Elementos ordenados: ", elementos_ordenados_por_angulo_creciente)
-    print()
+    # print("Elementos ordenados: ", elementos_ordenados_por_angulo_creciente)
+    # print()
     
     particiones = particionado(elementos_ordenados_por_angulo_creciente)
-    print("Particiones: ", particiones)
+    # print("Particiones: ", particiones)
 
-    ordenes_de_remplazo = obtener_orden_de_remplazo(particiones)
-    print("ordenes_de_remplazo: ", ordenes_de_remplazo)
+    ordenes_de_remplazo_en_c = obtener_orden_de_remplazo_en_costo(particiones)
+    # print("ordenes_de_remplazo: ", ordenes_de_remplazo)
     
     particiones_con_costo = []
 
-    for i in len(particiones):
+    for i in range(len(particiones)):
 
         particiones_con_costo.append({
             "particion": particiones[i],
-            "costo_disminuido": proxima_palabra(opcion_min)["bajada"],
-            "proxima_particion": proxima_palabra(opcion_min)["proxima_particion"]
+            "costo_disminuido": proxima_palabra(particiones[i], ordenes_de_remplazo_en_c[i])["bajada"],
+            "proxima_particion": proxima_palabra(particiones[i], ordenes_de_remplazo_en_c[i])["palabra"]
         })
-    print(particiones_con_costo)        
-    # while capacidad > costo:
-        
+    # print()
+    # print()
+    # print("particiones con costo de dar un paso: ", particiones_con_costo)
     
+    # calculo el costo de la actual combinacion para tener de referencia
+    costo_total = 0
+    for p in particiones:
+        costo_total = costo_total + costo_de_palabra(p)
+
+    while capacidad < costo_total:
+
+        indice_de_remplazo_efectivo = 0
+        for i in range(len(particiones_con_costo)):
+            # print("particiones con costo de dar un paso: ", particiones_con_costo[i].keys())
+        
+            if particiones_con_costo[indice_de_remplazo_efectivo]["costo_disminuido"] > particiones_con_costo[i]["costo_disminuido"]:
+                indice_de_remplazo_efectivo = i
+        print("indice_de_remplazo_efectivo", indice_de_remplazo_efectivo)
+
+        particion = particiones_con_costo[indice_de_remplazo_efectivo]["proxima_particion"]
+        prox_costo_disminuido = proxima_palabra(particion, ordenes_de_remplazo_en_c[indice_de_remplazo_efectivo])["bajada"]
+        proxima_particion = proxima_palabra(particion, ordenes_de_remplazo_en_c[indice_de_remplazo_efectivo])["palabra"]
+        
+        particiones_con_costo[indice_de_remplazo_efectivo] = {
+            "particion": particion,
+            "costo_disminuido": prox_costo_disminuido,
+            "proxima_particion": proxima_particion
+        }
+        costo_total -= particiones_con_costo[indice_de_remplazo_efectivo]["costo_disminuido"]
+    
+        print(costo_total)
+        # print(particiones_con_costo[0])
+        l = []
+        for pcc in particiones_con_costo:
+            for elemento in pcc["particion"]:
+                l.append(elemento["nombre"])
+        print(l)
+    
+    respuesta = []
+    for pcc in particiones_con_costo:
+        for elemento in pcc["particion"]:
+            respuesta.append(elemento["nombre"])
+        
+    return respuesta
 # esta funcion la hizo la ia 
 def knapsack_01(capacidad, objetos):
     n = len(objetos)
@@ -244,9 +293,9 @@ print(f"Valor Máximo Total: {valor_total}")
 print(f"Valor Peso Total: {peso_total}")
 print(f"Objetos seleccionados (etiqueta): {seleccionados}\n")
 
-knapsack_p(capacidad_mochila, lista_objetos)
-print("=== pol con peso ===")
+respuesta = knapsack_p(capacidad_mochila, lista_objetos)
+print("=== Mochila polinoimial ===")
 
-print(f"Valor Máximo Total: {valor_total}")
-print(f"Valor Peso Total: {peso_total}")
-print(f"Objetos seleccionados (etiqueta): {seleccionados}\n")
+# print(f"Valor Máximo Total: {valor_total}")
+# print(f"Valor Peso Total: {peso_total}")
+print(f"Objetos seleccionados (etiqueta): {respuesta}\n")
