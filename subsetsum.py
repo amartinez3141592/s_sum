@@ -2,6 +2,19 @@ import math
 import random
 
 
+
+def solucionR(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[0][1] == maximo:
+            return [V[2][0], V[0][0]]
+        else:
+            return [V[1][0]]
+    else:
+        if V[n][1] > maximo:
+            return solucionR(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionR(maximo - V[n][1], n-1, V)
+    
 def solucionO(maximo, n, V):
     if n == 2:
         if V[2][1]+V[1][1]+V[0][1] == maximo:
@@ -90,8 +103,14 @@ def obtener_suma_de_valores_aleatorios(tabla):
 
 # tenemos la lista de objecos
 lista_objetos = [
+    ("L", 1542),  
+    ("N", 1154),  
+    ("T", 20),  
+    ("S", 19),  
+    ("Q", 17),  
+    ("O", 15),  
+    ("P", 1), 
     ("A", 3),  
-    ("Z", 3),  
     ("B", 4), 
     ("E", 5),  
     ("F", 6),  
@@ -100,15 +119,8 @@ lista_objetos = [
     ("I", 9),  
     ("J", 1011),  
     ("K", 11),  
-    ("L", 1542),  
     ("M", 13),  
-    ("N", 1154),  
-    ("O", 15),  
-    ("P", 1),  
-    ("Q", 17),  
     ("R", 168),  
-    ("S", 19),  
-    ("T", 20)  
 ]
 
 #tenemos la lista ordenada de objetos decreciente
@@ -131,10 +143,12 @@ print("==")
 O=solucionO(suma_random,len(lista_objetos)-1, lista_objetos)
 P=solucionP(suma_random,len(lista_objetos)-1, lista_objetos)
 Q=solucionQ(suma_random,len(lista_objetos)-1, lista_objetos)
+R=solucionR(suma_random,len(lista_objetos)-1, lista_objetos)
 
 sumaO = obtener_suma_con_letras(lista_objetos, O)
 sumaQ = obtener_suma_con_letras(lista_objetos, Q)
 sumaP = obtener_suma_con_letras(lista_objetos, P)
+sumaR = obtener_suma_con_letras(lista_objetos, R)
 
 
 if sumaO == suma_random:
@@ -143,3 +157,5 @@ if sumaP == suma_random:
     print(P,sumaP)
 if sumaQ == suma_random:
     print(Q,sumaQ)
+if sumaR == suma_random:
+    print(R,sumaR)
