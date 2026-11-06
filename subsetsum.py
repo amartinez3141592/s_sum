@@ -1,7 +1,79 @@
 import math
 import random
 
+def solucionX(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[1][1]+V[0][1] == maximo:
+            return [V[2][0], V[1][0], V[0][0]]
+        else:
+            return [V[2][0]]
+    else:
+        if V[n][1] > maximo:
+            return solucionX(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionX(maximo - V[n][1], n-1, V)
 
+def solucionW(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[0][1] == maximo:
+            return [V[2][0], V[0][0]]
+        else:
+            return []
+    else:
+        if V[n][1] > maximo:
+            return solucionW(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionW(maximo - V[n][1], n-1, V)
+
+def solucionV(maximo, n, V):
+    if n == 2:
+        if V[1][1]+V[0][1] == maximo:
+            return [V[1][0], V[0][0]]
+        else:
+            return []
+    else:
+        if V[n][1] > maximo:
+            return solucionV(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionV(maximo - V[n][1], n-1, V)
+
+
+def solucionU(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[1][1]+V[0][1] == maximo:
+            return [V[2][0], V[1][0], V[0][0]]
+        else:
+            return [V[2][0], V[1][0]]
+    else:
+        if V[n][1] > maximo:
+            return solucionU(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionU(maximo - V[n][1], n-1, V)
+
+
+def solucionT(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[1][1]+V[0][1] == maximo:
+            return [V[2][0], V[1][0], V[0][0]]
+        else:
+            return []
+    else:
+        if V[n][1] > maximo:
+            return solucionT(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionT(maximo - V[n][1], n-1, V)
+
+def solucionS(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[1][1]+V[0][1] == maximo:
+            return [V[2][0], V[1][0], V[0][0]]
+        else:
+            return [V[1][0]]
+    else:
+        if V[n][1] > maximo:
+            return solucionS(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionS(maximo - V[n][1], n-1, V)
 
 def solucionR(maximo, n, V):
     if n == 2:
@@ -17,11 +89,7 @@ def solucionR(maximo, n, V):
     
 def solucionO(maximo, n, V):
     if n == 2:
-        if V[2][1]+V[1][1]+V[0][1] == maximo:
-            return [V[2][0], V[1][0], V[0][0]]
-        elif V[2][1]+V[1][1] == maximo:
-            return [V[2][0],V[1][0]]
-        elif V[0][1] == maximo:
+        if V[0][1] == maximo:
             return [V[0][0]]
         else:
             return []
@@ -135,6 +203,7 @@ print(lista_objetos)
 
 #obtenemos suma
 suma_random = obtener_suma_de_valores_aleatorios(lista_objetos)
+# suma_random= 3804
 
 print("==")
 print("COMIENZO")
@@ -144,11 +213,23 @@ O=solucionO(suma_random,len(lista_objetos)-1, lista_objetos)
 P=solucionP(suma_random,len(lista_objetos)-1, lista_objetos)
 Q=solucionQ(suma_random,len(lista_objetos)-1, lista_objetos)
 R=solucionR(suma_random,len(lista_objetos)-1, lista_objetos)
+S=solucionS(suma_random,len(lista_objetos)-1, lista_objetos)
+T=solucionT(suma_random,len(lista_objetos)-1, lista_objetos)
+U=solucionU(suma_random,len(lista_objetos)-1, lista_objetos)
+V=solucionV(suma_random,len(lista_objetos)-1, lista_objetos)
+W=solucionW(suma_random,len(lista_objetos)-1, lista_objetos)
+X=solucionX(suma_random,len(lista_objetos)-1, lista_objetos)
 
 sumaO = obtener_suma_con_letras(lista_objetos, O)
-sumaQ = obtener_suma_con_letras(lista_objetos, Q)
 sumaP = obtener_suma_con_letras(lista_objetos, P)
+sumaQ = obtener_suma_con_letras(lista_objetos, Q)
 sumaR = obtener_suma_con_letras(lista_objetos, R)
+sumaS = obtener_suma_con_letras(lista_objetos, S)
+sumaT = obtener_suma_con_letras(lista_objetos, T)
+sumaU = obtener_suma_con_letras(lista_objetos, U)
+sumaV = obtener_suma_con_letras(lista_objetos, V)
+sumaW = obtener_suma_con_letras(lista_objetos, W)
+sumaX = obtener_suma_con_letras(lista_objetos, X)
 
 
 if sumaO == suma_random:
@@ -159,3 +240,15 @@ if sumaQ == suma_random:
     print(Q,sumaQ)
 if sumaR == suma_random:
     print(R,sumaR)
+if sumaS == suma_random:
+    print(S,sumaS)
+if sumaT == suma_random:
+    print(T,sumaT)
+if sumaU == suma_random:
+    print(U,sumaU)
+if sumaV == suma_random:
+    print(V,sumaV)
+if sumaW == suma_random:
+    print(W,sumaW)
+if sumaX == suma_random:
+    print(X,sumaX)
