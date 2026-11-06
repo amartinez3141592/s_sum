@@ -21,9 +21,9 @@ def solucionQ(maximo, n, V):
             return [V[2][0],V[0][0]]
     else:
         if V[n][1] + V[2][1] > maximo:
-            return solucionO(maximo, n-1, V)
+            return solucionQ(maximo, n-1, V)
         else:
-            return [V[n][0]] + solucionO(maximo - V[n][1], n-1, V)
+            return [V[n][0]] + solucionQ(maximo - V[n][1], n-1, V)
     
 
 def solucionP(maximo, n, V):
@@ -47,9 +47,9 @@ def solucionO(maximo, n, V):
             return []
     else:
         if V[n][1] > maximo:
-            return solucionQ(maximo, n-1, V)
+            return solucionO(maximo, n-1, V)
         else:
-            return [V[n][0]] + solucionQ(maximo - V[n][1], n-1, V)
+            return [V[n][0]] + solucionO(maximo - V[n][1], n-1, V)
     
 
 def numero_a_lista_fija(numero, bits_usados):
