@@ -1,6 +1,18 @@
 import math
 import random
 
+def solucionY(maximo, n, V):
+    if n == 2:
+        if V[2][1]+V[0][1] == maximo:
+            return [V[2][0], V[0][0]]
+        else:
+            return [V[1][0]]
+    else:
+        if V[n][1] > maximo:
+            return solucionY(maximo, n-1, V)
+        else:
+            return [V[n][0]] + solucionY(maximo - V[n][1], n-1, V)
+
 def solucionX(maximo, n, V):
     if n == 2:
         if V[2][1]+V[1][1]+V[0][1] == maximo:
@@ -219,6 +231,7 @@ U=solucionU(suma_random,len(lista_objetos)-1, lista_objetos)
 V=solucionV(suma_random,len(lista_objetos)-1, lista_objetos)
 W=solucionW(suma_random,len(lista_objetos)-1, lista_objetos)
 X=solucionX(suma_random,len(lista_objetos)-1, lista_objetos)
+Y=solucionY(suma_random,len(lista_objetos)-1, lista_objetos)
 
 sumaO = obtener_suma_con_letras(lista_objetos, O)
 sumaP = obtener_suma_con_letras(lista_objetos, P)
@@ -230,6 +243,7 @@ sumaU = obtener_suma_con_letras(lista_objetos, U)
 sumaV = obtener_suma_con_letras(lista_objetos, V)
 sumaW = obtener_suma_con_letras(lista_objetos, W)
 sumaX = obtener_suma_con_letras(lista_objetos, X)
+sumaY = obtener_suma_con_letras(lista_objetos, Y)
 
 
 if sumaO == suma_random:
@@ -252,3 +266,5 @@ if sumaW == suma_random:
     print(W,sumaW)
 if sumaX == suma_random:
     print(X,sumaX)
+if sumaY == suma_random:
+    print(Y,sumaY)
