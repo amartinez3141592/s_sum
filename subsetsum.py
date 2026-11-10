@@ -38,7 +38,6 @@ def solucionP(maximo, n, V):
         else:
             return [V[n][0]] + solucionP(maximo - V[n][1], n-1, V)
     
-
 def solucionO(maximo, n, V):
     if n == 2:
         if V[0][1] == maximo:
@@ -87,7 +86,8 @@ def obtener_suma_de_valores_aleatorios(tabla):
     pertenece = numero_a_lista_fija(random_i, int(math.floor(2**len(tabla))))
     print("#SECRETO: variable local")
     print("indice", random_i)
-    print("pertenece", pertenece.reverse())
+    pertenece.reverse()
+    print("pertenece", pertenece)
     L = obtener_letras(tabla, pertenece)
     suma = obtener_suma(tabla, pertenece)
     print(L)
