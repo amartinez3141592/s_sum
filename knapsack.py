@@ -2,53 +2,40 @@ import math
 import random
 
 def mochila01_O(Zord, costoM, pos):
-    if pos == 2:
+    if pos == 1:
         if Zord[0][1] <= costoM:
             return [Zord[0]]
         else:
             return []
     else:
-        if Zord[pos][1] <= costoM:
-            return [Zord[pos]] + mochila01_O(Zord, costoM - Zord[pos][1], pos - 1)
-        else:
+        if Zord[pos][1] > costoM:
             return mochila01_O(Zord, costoM, pos - 1)
+        else:
+            return [Zord[pos]] + mochila01_O(Zord, costoM - Zord[pos][1], pos - 1)
 
 def mochila01_P(Zord, costoM, pos):
-    if pos == 2:
+    if pos == 1:
         if Zord[0][1] + Zord[1][1] <= costoM:
             return [Zord[0], Zord[1]]
         else:
-            return [Zord[1]]
+            return [Zord[0]]
     else:
-        if Zord[pos][1] + Zord[1][1] <= costoM:
-            return [Zord[pos]] + mochila01_P(Zord, costoM - Zord[pos][1], pos - 1)
-        else:
+        if Zord[pos][1] + Zord[0][1] > costoM:
             return mochila01_P(Zord, costoM, pos - 1)
+        else:
+            return [Zord[pos]] + mochila01_P(Zord, costoM - Zord[pos][1], pos - 1)
             
 def mochila01_Q(Zord, costoM, pos):
-    if pos == 2:
-        if Zord[2][1] + Zord[0][1] <= costoM:
-            return [Zord[2], Zord[0]]
+    if pos == 1:
+        if Zord[0][1] + Zord[1][1] <= costoM:
+            return [Zord[1], Zord[0]]
         else:
-            return [Zord[2]]
+            return [Zord[1]]
     else:
-        if Zord[pos][1] + Zord[2][1] <= costoM:
-            return [Zord[pos]] + mochila01_Q(Zord, costoM - Zord[pos][1], pos - 1)
-        else:
+        if Zord[pos][1] + Zord[1][1] > costoM:
             return mochila01_Q(Zord, costoM, pos - 1)
-
-
-def mochila01_R(Zord, costoM, pos):
-    if pos == 2:
-        if Zord[2][1] + Zord[1][1] + Zord[0][1] <= costoM:
-            return [Zord[2], Zord[1], Zord[0]]
         else:
-            return [Zord[2], Zord[1]]
-    else:
-        if Zord[pos][1] + Zord[2][1] + Zord[1][1] + Zord[0][1] <= costoM:
-            return [Zord[pos]] + mochila01_R(Zord, costoM - Zord[pos][1], pos - 1)
-        else:
-            return mochila01_R(Zord, costoM, pos - 1)
+            return [Zord[pos]] + mochila01_Q(Zord, costoM - Zord[pos][1], pos - 1)
 
 def mochila_greedy(lista_items, capacidad):
     # 1. Ordenamos la lista de mayor a menor según la relación (valor / peso)
@@ -165,13 +152,12 @@ lista_objetos = [
     # ("S", 19, 40),     
     # ("T", 20, 41) 
 ]
-lista_objetos = [(e[0], e[1], e[2], math.tan(e[1]/e[2])) for e in lista_objetos]
 
 #tenemos la lista ordenada de objetos decreciente
 lista_objetos = sorted(
     lista_objetos,
-    key=lambda x: x[3],
-    reverse=True
+    key=lambda x: x[2],
+    reverse=False
 )
 lista_objetos = [(e[0], e[1], e[2]) for e in lista_objetos]
 
@@ -183,16 +169,16 @@ print()
 costo_aleatorio = obtener_costo_de_items_aleatorios(lista_objetos)
 print()
 
-beneficio, solucion = knapsack(lista_objetos, costo_aleatorio)
+beneficio_maximo, solucion = knapsack(lista_objetos, costo_aleatorio)
 print("algoritmo pseudo polinomial conocido",
     "letras", [l[0] for l in solucion],
     "costo", obtener_costo(solucion,[1 for l in solucion]),
-    "beneficio", beneficio)
+    "beneficio", beneficio_maximo)
 print()
-beneficio, solucion = mochila_greedy(lista_objetos.copy(), costo_aleatorio)
+beneficio_greedy, solucion = mochila_greedy(lista_objetos.copy(), costo_aleatorio)
 print("algoritmo greedy ", " letras", [l[0] for l in solucion],
     "costo", obtener_costo(solucion,[1 for l in solucion]),
-    "beneficio", beneficio)
+    "beneficio", beneficio_greedy)
 
 
 O = mochila01_O(lista_objetos, costo_aleatorio, len(lista_objetos) - 1)
@@ -207,13 +193,14 @@ Q = mochila01_Q(lista_objetos, costo_aleatorio, len(lista_objetos) - 1)
 costo_Q = obtener_costo(Q, [1 for l in Q])
 beneficio_Q = obtener_beneficio(Q, [1 for l in Q])
 
-R = mochila01_R(lista_objetos, costo_aleatorio, len(lista_objetos) - 1)
-costo_R = obtener_costo(R, [1 for l in R])
-beneficio_R = obtener_beneficio(R, [1 for l in R])
-
 print(" -------------------------------------")
 print(" algoritmo polinomial recursivo ")
-
+if beneficio_O == beneficio_maximo or \
+    beneficio_P == beneficio_maximo or \
+    beneficio_Q == beneficio_maximo:
+   print("se llego por solucion recursiva!")
+else:
+    print("NO se llego por solucion recursiva")
 print("O", "letras", obtener_letras(O, [1 for l in O]),
 " costo", costo_O, " beneficio", beneficio_O)
 
@@ -222,8 +209,5 @@ print("P"," letras", obtener_letras(P, [1 for l in P]),
 
 print("Q", " letras", obtener_letras(Q, [1 for l in Q]),
 " costo", costo_Q, " beneficio", beneficio_Q)
-
-print("R", " letras", obtener_letras(R, [1 for l in R]),
-" costo", costo_R, " beneficio", beneficio_R)
 
 print("-------------------------------------")
