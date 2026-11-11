@@ -1,9 +1,35 @@
 import math
 import random
 
+def greedy_subset_sum(nums, target):
+    # Sort descending to pick the largest numbers first
+    sorted_nums = sorted(
+        lista_objetos.copy(),
+        key=lambda x: x[1],
+        reverse=False
+    )
+    subset = []
+    current_sum = 0
+
+    for etiqueta, num in sorted_nums:
+        if current_sum + num <= target:
+            subset.append((etiqueta, num))
+            current_sum += num
+        if current_sum == target:
+            return subset
+
+    # May return False even when an exact subset exists
+    return subset
+
+# estas soluciones buscan la solucion en los subbloques ignorando la solucion greedy
+# por un tema de orden no puede recorrer la solucion greedy sin dejar de ser polinomial
+
+# base
+# 1 1 0
+# 1 1 1
 def solucionS(maximo, n, V):
     if n == 2:
-        if V[2][1]+V[1][1]== maximo:
+        if V[2][1]+V[1][1] == maximo:
             return [V[2][0], V[1][0]]
         else:
             return [V[2][0], V[1][0], V[0][0]]
@@ -12,7 +38,10 @@ def solucionS(maximo, n, V):
             return solucionS(maximo, n-1, V)
         else:
             return [V[n][0]] + solucionS(maximo - V[n][1], n-1, V)
-    
+
+# base
+# 1 0 0
+# 1 0 1
 def solucionQ(maximo, n, V):
     if n == 2:
         if V[2][1] == maximo:
@@ -25,7 +54,9 @@ def solucionQ(maximo, n, V):
         else:
             return [V[n][0]] + solucionQ(maximo - V[n][1], n-1, V)
     
-
+# base
+# 0 1 0
+# 0 1 1
 def solucionP(maximo, n, V):
     if n == 2:
         if V[1][1] == maximo:
@@ -37,7 +68,10 @@ def solucionP(maximo, n, V):
             return solucionP(maximo, n-1, V)
         else:
             return [V[n][0]] + solucionP(maximo - V[n][1], n-1, V)
-    
+
+# base
+# 0 0 0
+# 0 0 1    
 def solucionO(maximo, n, V):
     if n == 2:
         if V[0][1] == maximo:
@@ -97,24 +131,30 @@ def obtener_suma_de_valores_aleatorios(tabla):
 
 # tenemos la lista de objecos
 lista_objetos = [
-    ("L", 1542),  
-    ("N", 1154),  
-    ("T", 20),  
-    ("S", 19),  
-    ("Q", 17),  
-    ("O", 15),  
-    ("P", 1), 
-    ("A", 3),  
-    ("B", 4), 
-    ("E", 5),  
-    ("F", 6),  
-    ("G", 7),  
-    ("H", 8),  
-    ("I", 9),  
-    ("J", 1011),  
-    ("K", 11),  
-    ("M", 13),  
-    ("R", 168),  
+    ("A0", 32),  
+    ("A", 30),  
+    ("B", 20),  
+    ("C", 11),  
+    ("D", 3),  
+ 
+    # ("L", 1542),  
+    # ("N", 1154),  
+    # ("T", 20),  
+    # ("S", 19),  
+    # ("Q", 17),  
+    # ("O", 15),  
+    # ("P", 1), 
+    # ("A", 3),  
+    # ("B", 4), 
+    # ("E", 5),  
+    # ("F", 6),  
+    # ("G", 7),  
+    # ("H", 8),  
+    # ("I", 9),  
+    # ("J", 1011),  
+    # ("K", 11),  
+    # ("M", 13),  
+    # ("R", 168),  
 ]
 
 #tenemos la lista ordenada de objetos decreciente
@@ -126,10 +166,11 @@ lista_objetos = sorted(
 
 print(lista_objetos)
 
-
+# j=1
+# while j < 100: 
 #obtenemos suma
 suma_random = obtener_suma_de_valores_aleatorios(lista_objetos)
-# suma_random= 3804
+suma_random= 64
 
 print("==")
 print("COMIENZO")
@@ -146,10 +187,35 @@ sumaQ = obtener_suma_con_letras(lista_objetos, Q)
 sumaS = obtener_suma_con_letras(lista_objetos, S)
 
 if sumaO == suma_random:
+    print("solucion O encontrada!")
     print(O,sumaO)
-if sumaP == suma_random:
+elif sumaP == suma_random:
+    print("solucion P encontrada!")
     print(P,sumaP)
-if sumaQ == suma_random:
+elif sumaQ == suma_random:
+    print("solucion Q encontrada!")
     print(Q,sumaQ)
-if sumaS == suma_random:
+elif sumaS == suma_random:
+    print("solucion S encontrada!")
     print(S,sumaS)
+else:
+    # hago greedy porque la solucion es una combinacion de los elementos mas chicos posibles
+    # porque cuando elijo entre A[n] y A[n-1]...A[1] puede ser que me convenga elegir la segunda y por hipotesis de orden no va por ahi
+    print("solucion greedy es la solucion a menos de una diferencia de la segunda fila paso base")
+    entrada = greedy_subset_sum(lista_objetos, suma_random)
+    suma = obtener_suma(entrada, [1 for l in entrada])
+    
+    if suma == suma_random:
+        print("S no exploro: ", [l[0] for l in entrada], suma_random)
+    elif suma - lista_objetos[1][1] == suma_random:
+        print("Q no exploro: ", [l[0] for l in entrada if l != lista_objetos[1]], suma_random)
+    elif suma - lista_objetos[2][1] == suma_random:
+        print("P no exploro: ", [l[0] for l in entrada if l != lista_objetos[2]], suma_random)
+    elif suma - lista_objetos[2][1] - lista_objetos[1][1] == suma_random:
+        print("O no exploro: ", [l[0] for l in entrada if l != lista_objetos[2] and l != lista_objetos[1]], suma_random)
+
+# if sumaO != suma_random and sumaP != suma_random and sumaQ != suma_random and sumaS != suma_random:
+#     print("error")
+#     break
+
+# j = j + 1
