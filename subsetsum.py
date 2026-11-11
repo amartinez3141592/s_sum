@@ -170,7 +170,7 @@ print(lista_objetos)
 # while j < 100: 
 #obtenemos suma
 suma_random = obtener_suma_de_valores_aleatorios(lista_objetos)
-suma_random= 64
+# suma_random= 64
 
 print("==")
 print("COMIENZO")
@@ -204,7 +204,7 @@ else:
     print("solucion greedy es la solucion a menos de una diferencia de la segunda fila paso base")
     entrada = greedy_subset_sum(lista_objetos, suma_random)
     suma = obtener_suma(entrada, [1 for l in entrada])
-    
+
     if suma == suma_random:
         print("S no exploro: ", [l[0] for l in entrada], suma_random)
     elif suma - lista_objetos[1][1] == suma_random:
