@@ -1,30 +1,26 @@
 import math
 import random
 
-def mochila01_O(Zord, costoM, pos):
-    if pos == 1:
-        if Zord[1][1] <= costoM:
-            return [Zord[1]]
-        else:
-            return []
-    else:
-        if Zord[pos][1] > costoM:
-            return mochila01_O(Zord, costoM, pos - 1)
-        else:
-            return [Zord[pos]] + mochila01_O(Zord, costoM - Zord[pos][1], pos - 1)
-
-def mochila01_P(Zord, costoM, pos):
+# 0 1
+# 1 1
+def mochila01_P(Zord, costoM, pos, costoTotal, valorTotal):
     if pos == 1:
         if Zord[0][1] + Zord[1][1] <= costoM:
             return [Zord[0], Zord[1]]
         else:
             return [Zord[0]]
     else:
+        # porque la primera fila es 0 1
         if Zord[pos][1] + Zord[0][1] > costoM:
-            return mochila01_P(Zord, costoM, pos - 1)
+            return mochila01_P(Zord, costoM, pos - 1, costoTotal - Zord[pos][1], valorTotal - Zord[pos][2])
         else:
-            return [Zord[pos]] + mochila01_P(Zord, costoM - Zord[pos][1], pos - 1)
-            
+            # porque la primera fila es 0 1
+            if costoTotal - Zord[pos][1] == Zord[pos][1] + Zord[0][1]:
+                return mochila01_P(Zord, costoM, pos - 1, costoTotal - Zord[pos][1], valorTotal - Zord[pos][2])
+            else:
+                return [Zord[pos]] + mochila01_P(Zord, costoM - Zord[pos][1], pos - 1, costoTotal - Zord[pos][1], valorTotal - Zord[pos][2])
+# 1 0
+# 1 1     
 def mochila01_Q(Zord, costoM, pos):
     if pos == 1:
         if Zord[0][1] + Zord[1][1] <= costoM:
@@ -36,7 +32,8 @@ def mochila01_Q(Zord, costoM, pos):
             return mochila01_Q(Zord, costoM, pos - 1)
         else:
             return [Zord[pos]] + mochila01_Q(Zord, costoM - Zord[pos][1], pos - 1)
-
+# 0 0
+# 0 1
 def mochila01_R(Zord, costoM, pos):
     if pos == 1:
         if Zord[0][1] <= costoM:
@@ -48,18 +45,6 @@ def mochila01_R(Zord, costoM, pos):
             return mochila01_R(Zord, costoM, pos - 1)
         else:
             return [Zord[pos]] + mochila01_R(Zord, costoM - Zord[pos][1], pos - 1)
-
-def mochila01_S(Zord, costoM, pos):
-    if pos == 1:
-        if Zord[1][1] + Zord[0][1] <= costoM:
-            return [Zord[1], Zord[0]]
-        else:
-            return []
-    else:
-        if Zord[pos][1] > costoM:
-            return mochila01_S(Zord, costoM, pos - 1)
-        else:
-            return [Zord[pos]] + mochila01_S(Zord, costoM - Zord[pos][1], pos - 1)
 
 def mochila_greedy(lista_items, capacidad):
     # 1. Ordenamos la lista de mayor a menor según la relación (valor / peso)
@@ -159,12 +144,12 @@ lista_objetos = [
     ("B", 20, 100),   
     ("C", 30, 120),     
     ("D", 5, 24),     
-    ("E", 5, 24),     
-    ("F", 6, 25),     
-    ("G", 7, 26),     
-    ("H", 8, 28),     
-    ("I", 9, 30),     
-    ("J", 10, 31),     
+    # ("E", 5, 24),     
+    # ("F", 6, 25),     
+    # ("G", 7, 26),     
+    # ("H", 8, 28),     
+    # ("I", 9, 30),     
+    # ("J", 10, 31),     
     # ("K", 11, 32),     
     # ("L", 12, 33),     
     # ("M", 13, 34),     
@@ -180,7 +165,7 @@ lista_objetos = [
 #tenemos la lista ordenada de objetos decreciente
 lista_objetos = sorted(
     lista_objetos,
-    key=lambda x: x[2],
+    key=lambda x: x[1],
     reverse=False
 )
 lista_objetos = [(e[0], e[1], e[2]) for e in lista_objetos]
@@ -191,6 +176,7 @@ print(lista_objetos)
 print()
 
 costo_aleatorio = obtener_costo_de_items_aleatorios(lista_objetos)
+costo_aleatorio = 40
 print()
 
 beneficio_maximo, solucion = knapsack(lista_objetos, costo_aleatorio)
@@ -204,12 +190,14 @@ print("algoritmo greedy ", " letras", [l[0] for l in solucion],
     "costo", obtener_costo(solucion,[1 for l in solucion]),
     "beneficio", beneficio_greedy)
 
+sumatoria_costo = obtener_costo(lista_objetos, [1 for l in lista_objetos])
+sumatoria_valor = obtener_beneficio(lista_objetos, [1 for l in lista_objetos])
 
 O = mochila01_O(lista_objetos, costo_aleatorio, len(lista_objetos) - 1)
 costo_O = obtener_costo(O, [1 for l in O])
 beneficio_O = obtener_beneficio(O, [1 for l in O])
 
-P = mochila01_P(lista_objetos, costo_aleatorio, len(lista_objetos) - 1)
+P = mochila01_P(lista_objetos, costo_aleatorio, len(lista_objetos) - 1, sumatoria_costo, sumatoria_valor)
 costo_P = obtener_costo(P, [1 for l in P])
 beneficio_P = obtener_beneficio(P, [1 for l in P])
 
