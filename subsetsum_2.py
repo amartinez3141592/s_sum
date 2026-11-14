@@ -75,13 +75,16 @@ def obtenerFila(unos,variables,i):
     else:
         comb = math.comb(variables-1, unos)
         if i > comb:
-            return [1] + obtenerFila(unos-1,variables-1, i - comb)
+            i = i - comb
+            comb = 0 # libero memoria
+            return [1] + obtenerFila(unos-1,variables-1, i)
         else:
+            comb = 0 # libero memoria
             return [0] + obtenerFila(unos  ,variables-1, i)
 
 lista_objetos = [
-    ("A0", 32),  
     ("L", 35),
+    ("A0", 32),  
     ("A", 30),  
     ("B", 20),  
     ("C", 11),  
@@ -93,8 +96,8 @@ lista_objetos = sorted(
     reverse=False
 )
 suma_objetivo = obtener_suma_de_valores_en_el_indice(lista_objetos, random.randint(1, 2**len(lista_objetos)))
+suma_objetivo = 38
 print(lista_objetos)
-
 if suma_objetivo == obtener_suma(lista_objetos, [1 for l in lista_objetos]):
     print("solucion:", lista_objetos)
 
@@ -103,35 +106,42 @@ if suma_objetivo == obtener_suma(lista_objetos, [1 for l in lista_objetos]):
 # orden n la parte interna del for
 
 for numero_de_unos in range(1,len(lista_objetos)):
-    tope = obtener_tope(numero_de_unos, len(lista_objetos))
+    tope = obtener_tope(numero_de_unos, len(lista_objetos)) +1
+    print("tope:", tope)
     piso = 1
     # idx = 0
     # and idx < 10:
-    while tope > piso: 
-        indice = math.floor((tope+piso)/2)
-        eleccionEnEseIndice = obtenerFila(numero_de_unos, len(lista_objetos), indice - 1)
+    while tope >= piso: 
+        indice = math.floor(( tope + piso )/2)
+        eleccionEnEseIndice = obtenerFila(numero_de_unos, len(lista_objetos), indice)
         sumaLocal = obtener_suma(lista_objetos, eleccionEnEseIndice)
-        print(obtener_letras(lista_objetos, eleccionEnEseIndice), eleccionEnEseIndice, sumaLocal, tope, piso)
+        print("DEBUG:", 'letras:', obtener_letras(lista_objetos, eleccionEnEseIndice), 'indice:', eleccionEnEseIndice, 'suma:', sumaLocal, 'tope:', tope, 'piso:', piso, 'index:', math.floor(( tope + piso )/2))
         if (sumaLocal < suma_objetivo):
-            if tope == piso +1:
-                piso = tope
-            else:
-                piso = indice
+            piso = indice + 1
         elif suma_objetivo < sumaLocal:
-            tope = indice
+            tope = indice - 1
         else:
-            print("solucion:",
+            print("solucion_:",
                 obtener_letras(lista_objetos, eleccionEnEseIndice),
                 obtener_suma(lista_objetos, eleccionEnEseIndice)
             )
             break
         # idx = idx + 1
-    eleccionEnEseIndice = obtenerFila(numero_de_unos, len(lista_objetos), tope -1)
-    sumaLocal = obtener_suma(lista_objetos, eleccionEnEseIndice)
-    print(obtener_letras(lista_objetos, eleccionEnEseIndice), eleccionEnEseIndice, sumaLocal, tope, piso)
-    if (sumaLocal == suma_objetivo):
-        print("solucion:",
-            obtener_letras(lista_objetos, eleccionEnEseIndice),
-            obtener_suma(lista_objetos, eleccionEnEseIndice)
-        )
-    
+
+    print() 
+
+print(obtenerFila(2, 6, 1))
+print(obtenerFila(2, 6, 2))
+print(obtenerFila(2, 6, 3))
+print(obtenerFila(2, 6, 4))
+print(obtenerFila(2, 6, 5))
+print(obtenerFila(2, 6, 6))
+print(obtenerFila(2, 6, 7))
+print(obtenerFila(2, 6, 8))
+print(obtenerFila(2, 6, 9))
+print(obtenerFila(2, 6, 10))
+print(obtenerFila(2, 6, 11))
+print(obtenerFila(2, 6, 12))
+print(obtenerFila(2, 6, 13))
+print(obtenerFila(2, 6, 14))
+print(obtenerFila(2, 6, 15))
