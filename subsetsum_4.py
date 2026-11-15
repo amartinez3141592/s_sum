@@ -1,8 +1,13 @@
 import math
 import random
 
-# orden n siendo n la cantidad de elemntos de Z
-def obtener_Zarriba_y_Zabajo(n_dado, suma_divisoria, Z):
+# orden n*logn siendo n la cantidad de elemntos de Z
+def obtener_Zarriba_y_Zabajo_por_promedio(n_dado, suma_divisoria, Z):
+    Z = sorted(
+        Z,
+        key=lambda x: x[1],
+        reverse=False
+    )
     Z_arriba = []
     Z_abajo = []
     i = 0
@@ -19,9 +24,9 @@ def obtener_Zarriba_y_Zabajo(n_dado, suma_divisoria, Z):
     return Z_abajo, Z_arriba
 
 
-# orden n*n*n siendo n la cantidad de elemntos de Z
+# orden n*n*n*logn siendo n la cantidad de elemntos de Z
 def solucion_por_promedio(n_dado, suma_objetivo, Z):
-    Z_abajo, Z_arriba = obtener_Zarriba_y_Zabajo(n_dado, suma_objetivo, Z)
+    Z_abajo, Z_arriba = obtener_Zarriba_y_Zabajo_por_promedio(n_dado, suma_objetivo, Z)
 
     # no hay solucion con este n si el promedio no tiene elementos en alguno de los lados
     if (len(Z_abajo) == 0 or len(Z_arriba) == 0) and n_dado != 1:
@@ -65,23 +70,54 @@ def solucion_por_promedio(n_dado, suma_objetivo, Z):
     if sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) != suma_objetivo:
         print("primera solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
         print("primera solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
+
+
         while num_elecciones <= n_dado and \
                 sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) != suma_objetivo:
+           
+            Z_abajo_, Z_arriba_ = obtener_Zarriba_y_Zabajo_por_promedio( \
+                n_dado, \
+                sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]), \
+                # [e for e in Z_abajo if e not in solucionDOWN] + [e for e in Z_arriba if e not in solucionUP] 
+                solucionUP + solucionDOWN
+            )
+            print("Z_arriba_", Z_arriba_)
+            print("Z_abajo_", Z_abajo_)
+            print("prom", ((sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]))/n_dado))
             if suma_objetivo < sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) and idx_Z_abajo < len(Z_abajo):
-                prom_i = (sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN])) / n_dado
+                print("a")
                 solucionDOWN.pop(0)
+                print("solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
+                print("solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
                 solucionDOWN.append(Z_abajo[idx_Z_abajo])
+
+                print("solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
+                print("solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
+
                 idx_Z_abajo +=1
+                print("solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
+                print("solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
 
             elif sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) < suma_objetivo and idx_Z_arriba < len(Z_arriba):
+                print("b")
+                # diff_intercambio_mayores = sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) - Z_arriba[idx_Z_arriba - 1] + Z_arriba[idx_Z_arriba]
+
+                # if diff_intercambio_mayores <= suma_objetivo:
                 solucionUP.pop(0)
+                # solucionUP.remove(Z_arriba[0])
                 solucionUP.append(Z_arriba[idx_Z_arriba])
                 idx_Z_arriba += 1
+                # elif diff_intercambio_mayores < suma_objetivo:
+                # else:
+                    
+
+                print("solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
+                print("solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
             else:
                 break
 
         print("solucion opt:", solucionUP + solucionDOWN, sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]))
-
+        print()
     return solucionUP + solucionDOWN
 
 def main(lista_objetos, suma_objetivo):
@@ -139,12 +175,6 @@ lista_objetos = [
     # ("F", 12),  
     # ("G", 14)
 ]
-#tenemos la lista ordenada de objetos decreciente
-lista_objetos = sorted(
-    lista_objetos,
-    key=lambda x: x[1],
-    reverse=False
-)
 
 valor_total = obtener_suma(lista_objetos, [1 for l in lista_objetos])
 print(valor_total)
@@ -155,7 +185,7 @@ print(lista_objetos)
 j=1
 while j < 2**len(lista_objetos): 
     suma_objetivo = obtener_suma_de_valores_en_el_indice(lista_objetos, j)
-
+    # suma_objetivo = 8
     print("==")
     print("COMIENZO")
     print("==")
