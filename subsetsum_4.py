@@ -2,99 +2,87 @@ import math
 import random
 
 # orden n siendo n la cantidad de elemntos de Z
-def obtener_Zarriba_y_Zabajo(n_dado, suma, Z):
+def obtener_Zarriba_y_Zabajo(n_dado, suma_divisoria, Z):
     Z_arriba = []
     Z_abajo = []
-
     i = 0
-    print(suma, n_dado)
-    print("n_dado: ", n_dado, "Prom:", (suma/n_dado))
-
-    while i < len(Z) and Z[i][1] < (suma/n_dado):
-        print("P: ", Z[i][0] ," distancia: ", (Z[i][1] - (suma/n_dado)))
-        Z_abajo.append((Z[i][0], Z[i][1], abs(Z[i][1] - (suma/n_dado))))
+    while i < len(Z) and Z[i][1] <= (suma_divisoria/n_dado):
+        # print("P: ", Z[i][0] ," distancia: ", (Z[i][1] - (suma/n_dado)))
+        Z_abajo.append((Z[i][0], Z[i][1], abs(Z[i][1] - (suma_divisoria/n_dado))))
         i += 1
 
     while i < len(Z):
-        Z_arriba.append((Z[i][0], Z[i][1], abs(Z[i][1] - (suma/n_dado))))
+        Z_arriba.append((Z[i][0], Z[i][1], abs(Z[i][1] - (suma_objetivo/n_dado))))
         i += 1
     Z_abajo.reverse()
-    print(Z_abajo)
-    print(Z_arriba)
+
     return Z_abajo, Z_arriba
 
-# orden m*m siendo m el tamaño de la solucion acotada por el numero de elementos de la entrada
-# retorna la solucion completa con una variante comun que es quitar uno de solucionDOWN y agregar uno de Z_arriba
-def quitar_menor_y_agregarle_un_mayor(solucion, solucionUP, solucionDOWN, Z_arriba, idx_Z_arriba, suma):
-    idx_DOWN = 0
-    while idx_DOWN < len(solucionDOWN) and idx_Z_arriba < len(Z_arriba):
-        if sum([l[1] for l in solucion]) - solucionDOWN[idx_DOWN][1] + Z_arriba[idx_Z_arriba][1] == suma:
-            solucionDOWN.pop(idx_DOWN)
-            # union de conjuntos
-            return solucionDOWN + solucionUP
-        idx_DOWN += 1
-    return solucion
 
 # orden n*n*n siendo n la cantidad de elemntos de Z
-def solucion_por_promedio(n_dado, suma, Z):
-    Z_abajo, Z_arriba = obtener_Zarriba_y_Zabajo(n_dado, suma, Z)
+def solucion_por_promedio(n_dado, suma_objetivo, Z):
+    Z_abajo, Z_arriba = obtener_Zarriba_y_Zabajo(n_dado, suma_objetivo, Z)
+
+    # no hay solucion con este n si el promedio no tiene elementos en alguno de los lados
+    if (len(Z_abajo) == 0 or len(Z_arriba) == 0) and n_dado != 1:
+        print("n_dado imposible por simetria: ", n_dado)
+        return []
+
+    # print(suma, n_dado)
+    print("n_dado: ", n_dado, "Prom:", (suma_objetivo/n_dado))
+    print("UP: ", Z_abajo)
+    print("DOWN: ", Z_arriba)
+
     idx_Z_abajo = 0
-    idx_Z_arriba = 0 
+    idx_Z_arriba = 0
     solucionUP = []
     solucionDOWN = []
-    solucion = []
-    i = 0
-    while i < n_dado and idx_Z_abajo < len(Z_abajo) and idx_Z_arriba < len(Z_arriba):
-        print(Z_arriba[idx_Z_arriba])
-        
-        #agrego mas cercano
-        if Z_abajo[idx_Z_abajo][2] >= Z_arriba[idx_Z_arriba][2]:
-            
-            if sum([l[1] for l in solucion]) + Z_arriba[idx_Z_arriba][1] <= suma:
-                solucion.append(Z_arriba[idx_Z_arriba])
-                solucionUP.append(Z_arriba[idx_Z_arriba])
-                idx_Z_arriba += 1
-                i += 1
-            else:
-                break
-        else:
-            if sum([l[1] for l in solucion]) + Z_abajo[idx_Z_abajo][1] <= suma:
-                solucion.append(Z_abajo[idx_Z_abajo])
-                solucionDOWN.append(Z_abajo[idx_Z_abajo])
-                idx_Z_abajo += 1
-                i += 1
-            else:
-                break
-    # si la lista de arriba se termina sigo intentando agregar a los de abajo hasta pasarse en la suma
-    while i < n_dado and sum([l[1] for l in solucion]) < suma and idx_Z_abajo < len(Z_abajo):
-        if sum([l[1] for l in solucion]) + Z_abajo[idx_Z_abajo][1] <= suma:    
-            solucion.append(Z_abajo[idx_Z_abajo])
+    num_elecciones = 0
+
+    # empiezo por el elemento mas cercano al promedio y el primer condicional es por el caso borde
+    if n_dado < 2:
+        busco_menor = True
+    elif abs(Z_abajo[0][2]) < abs(Z_arriba[0][2]):
+        busco_menor = True
+    else:
+        busco_menor = False
+
+    while num_elecciones < n_dado:
+        if busco_menor and idx_Z_abajo < len(Z_abajo):
             solucionDOWN.append(Z_abajo[idx_Z_abajo])
-            i += 1
-        idx_Z_abajo += 1
-    
-    # si la lista de arriba se termina sigo intentando agregar a los de abajo hasta pasarse en la suma
-    while i < n_dado and sum([l[1] for l in solucion]) < suma and idx_Z_arriba < len(Z_arriba):
-        #agrego mas cercano
-        if sum([l[1] for l in solucion]) + Z_arriba[idx_Z_arriba][1] <= suma:    
-            solucion.append(Z_arriba[idx_Z_arriba])
+            idx_Z_abajo += 1
+            num_elecciones += 1
+        elif (not busco_menor) and idx_Z_arriba < len(Z_arriba):
             solucionUP.append(Z_arriba[idx_Z_arriba])
-            i += 1
-        idx_Z_arriba += 1
+            idx_Z_arriba += 1
+            num_elecciones += 1
+        else:
+            break
+        busco_menor = not busco_menor
 
     # si hay solucion para el n_dado
-    if len(solucion) > 0:
-        print("primera solucion: ", solucion, sum([l[1] for l in solucion]))
-        # esta solucion esta siempre por debajo de la solucion verdadera por un cambio de combinacion
-        print("idx_Z_abajo",idx_Z_abajo)
-        print("idx_Z_arriba",idx_Z_arriba)
-        
-        if sum([l[1] for l in solucion]) < suma:
-            solucion = quitar_menor_y_agregarle_un_mayor(solucion, solucionUP, solucionDOWN, Z_arriba, idx_Z_arriba, suma)
+    # las soluciones validas para un n tienen al menos un elemento en cada lado
+    if sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) != suma_objetivo:
+        print("primera solucion UP: ", solucionUP, sum([l[1] for l in solucionUP]))
+        print("primera solucion DOWN: ", solucionDOWN, sum([l[1] for l in solucionDOWN]))
+        while num_elecciones <= n_dado and \
+                sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) != suma_objetivo:
+            if suma_objetivo < sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) and idx_Z_abajo < len(Z_abajo):
+                prom_i = (sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN])) / n_dado
+                solucionDOWN.pop(0)
+                solucionDOWN.append(Z_abajo[idx_Z_abajo])
+                idx_Z_abajo +=1
 
-        print("ajuste para n: ", solucion, sum([l[1] for l in solucion]))
+            elif sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]) < suma_objetivo and idx_Z_arriba < len(Z_arriba):
+                solucionUP.pop(0)
+                solucionUP.append(Z_arriba[idx_Z_arriba])
+                idx_Z_arriba += 1
+            else:
+                break
 
-    return solucion
+        print("solucion opt:", solucionUP + solucionDOWN, sum([l[1] for l in solucionUP]) + sum([l[1] for l in solucionDOWN]))
+
+    return solucionUP + solucionDOWN
 
 def main(lista_objetos, suma_objetivo):
     n_dado = 1
