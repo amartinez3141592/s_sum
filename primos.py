@@ -1,31 +1,53 @@
 import math
 
-A_3_bits = [1,2,3,5]
-primos = [1,2,3,5]
+def es_primo(k):
+    if k == 1 or k == 2:
+        return True
+    
+    if k % 2 == 0:
+        return False
+    for i in range(3, int(k**0.5)+1, 2):
+        if k % i == 0:
+            print("ERROR: divide ", i)
+            return False
+    return True
+
+A_3_bits = [1,2,3,5,7]
+primos = [1,2,3,5,7]
 #tope de numeros de primos en resultado
-tope=20
+tope=5
 
 # maximo corrimiento de bits
 max_corrimientos=22
-idx_primo_sin_correr=0
+idx_primo=0
+print(1)
+print(2)
+print(3)
+print(5)
+print(7)
 
-while idx_primo_sin_correr< len(primos) and idx_primo_sin_correr < tope:
-    primo_sin_correr= primos[idx_primo_sin_correr]
-    if primo_sin_correr != 2:
-        for primo_corrido in A_3_bits:
-            if primo_corrido != primo_sin_correr:
-                for corrimiento in range(primo_sin_correr.bit_length()+1, max_corrimientos):
-                    primo_candidato = primo_corrido * (2**corrimiento) + primo_sin_correr
-                    
-                    # esta parte es conjetura, vi que siempre en este caso siempre
-                    # hay un 3 5 o 7 que determina si es primo o no si 
-                    if primo_candidato % 3 != 0 and \
-                            primo_candidato % 5 != 0 and \
-                            primo_candidato % 7 != 0:
-                        print("a.primo sin correr: ",primo_corrido,"primo corrido: ", primo_sin_correr,"cantidad: ", corrimiento, "primo: ", primo_candidato)
-                        primos.append(primo_candidato)
-                   
-    idx_primo_sin_correr += 1
+while idx_primo < len(primos) and idx_primo < tope:
+    primo = primos[idx_primo]
+
+    # if ((2 * (2**primo)) + 1) % primo != 0 and primo > 2:
+    #     primos.append((2 * (2**primo)) + 1)
+    #     print("a ",primo, ((2 * (2**primo)) + 1), es_primo((2 * (2**primo)) + 1))
+
+    # if ((2 * (2**primo)) + 5) % primo != 0 and primo > 2:
+    #     primos.append((2 * (2**primo)) + 5)
+    #     print("b ",primo, ((2 * (2**primo)) + 5), es_primo((2 * (2**primo)) + 5))
+
+    # el primo tiene que pasar los bits de 5
+    if ((3 * (2**primo)) + 5) % 3 == 5 % 3 and primo > 2:
+        primos.append((3 * (2**primo)) + 5)
+        print("c ", primo, (3 * (2**primo)) + 5, es_primo((3 * (2**primo)) + 5))
+    # # el primo tiene que pasar los bits de 5
+    
+    if ((3 * (2**primo)) + 7) % 3 == 7 % 3 and primo > 2:
+        primos.append((3 * (2**primo)) + 7)
+        print("d ", primo, (3 * (2**primo)) + 7, es_primo((3 * (2**primo)) + 7))
+    
+    idx_primo += 1
 
 primos=list(set(primos))
 print("primos:", sorted(primos))
