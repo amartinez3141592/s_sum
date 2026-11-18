@@ -2,52 +2,48 @@ import math
 
 def es_primo(k):
     if k == 1 or k == 2:
-        return True
+        return True, -1
     
     if k % 2 == 0:
-        return False
+        return False, 2
     for i in range(3, int(k**0.5)+1, 2):
         if k % i == 0:
-            print("ERROR: divide ", i)
-            return False
-    return True
+            return False, i
+    return True , -1
 
-A_3_bits = [1,2,3,5,7]
-primos = [1,2,3,5,7]
+primos_a = [1,2,3,5,7]
+primos_b = [1,2,3,5,7]
 #tope de numeros de primos en resultado
-tope=5
+tope=30
 
-# maximo corrimiento de bits
-max_corrimientos=22
-idx_primo=0
-print(1)
-print(2)
-print(3)
-print(5)
-print(7)
+idx=1
 
-while idx_primo < len(primos) and idx_primo < tope:
-    primo = primos[idx_primo]
+# primo = primos[idx]
 
-    # if ((2 * (2**primo)) + 1) % primo != 0 and primo > 2:
-    #     primos.append((2 * (2**primo)) + 1)
-    #     print("a ",primo, ((2 * (2**primo)) + 1), es_primo((2 * (2**primo)) + 1))
+# if  idx > 0:
+#     print("0a ",idx, ((3 * (2**idx)) + 5), es_primo((3 * (2**idx)) + 5))
+#     primos.append((3 * (2**idx)) + 5)
 
-    # if ((2 * (2**primo)) + 5) % primo != 0 and primo > 2:
-    #     primos.append((2 * (2**primo)) + 5)
-    #     print("b ",primo, ((2 * (2**primo)) + 5), es_primo((2 * (2**primo)) + 5))
+# if ((2 * (2**idx)) + 1) % 3 != 0 and ((2 * (2**idx)) + 1) % 5 != 0 and idx > 1:
+#     primos.append((2 * (2**idx)) + 1)
+#     print("a ",idx, ((2 * (2**idx)) + 1), es_primo((2 * (2**idx)) + 1))
 
-    # el primo tiene que pasar los bits de 5
-    if ((3 * (2**primo)) + 5) % 3 == 5 % 3 and primo > 2:
-        primos.append((3 * (2**primo)) + 5)
-        print("c ", primo, (3 * (2**primo)) + 5, es_primo((3 * (2**primo)) + 5))
-    # # el primo tiene que pasar los bits de 5
+# if  ((2 * (2**idx)) + 5) % 11 != 0 and ((2 * (2**idx)) + 5) % 7 != 0 and ((2 * (2**idx)) + 5) % 3 != 0 and idx > 3:
+#     primos.append((2 * (2**idx)) + 5)
+#     print("b ",idx, ((2 * (2**idx)) + 5), es_primo((2 * (2**idx)) + 5))
+
+while idx < len(primos_a) and idx < tope:
+    f = idx
+    if idx > 0:
+        divide, i = es_primo((3 * (2**f)) + 7)
+        
+        if i == -1:
+            print("3*2 **",f," + 7", (3 * (2**f)) + 7, bin((3 * (2**f)) + 7))
+        else:
+            print("3*2 **",f," + 7", (3 * (2**f)) + 7, bin((3 * (2**f)) + 7), bin(i), "X", f % 3 == 0)
+        primos_a.append((3 * (2**f)) + 7)
     
-    if ((3 * (2**primo)) + 7) % 3 == 7 % 3 and primo > 2:
-        primos.append((3 * (2**primo)) + 7)
-        print("d ", primo, (3 * (2**primo)) + 7, es_primo((3 * (2**primo)) + 7))
-    
-    idx_primo += 1
-
-primos=list(set(primos))
-print("primos:", sorted(primos))
+    idx += 1
+    primos_a=sorted(list(set(primos_a)))
+    # primos_b=sorted(list(set(primos_b)))
+print("primos:", sorted(primos_a))
