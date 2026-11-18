@@ -3,7 +3,7 @@ import math
 A_3_bits = [1,2,3,5]
 primos = [1,2,3,5]
 #tope de numeros de primos en resultado
-tope=50
+tope=20
 
 # maximo corrimiento de bits
 max_corrimientos=22
